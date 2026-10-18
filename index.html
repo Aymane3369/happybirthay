@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Joyeux anniversaire Noé 🎂</title>
+<style>
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+    padding: 24px 16px;
+    background: radial-gradient(circle at 50% 0%, #101a3d 0%, #05070f 60%);
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    color: #eaf0ff;
+  }
+
+  /* ---------- LA CARTE ---------- */
+  .card {
+    position: relative;
+    width: min(94vw, 420px);
+    padding: 30px 22px 26px;
+    border-radius: 26px;
+    overflow: hidden;
+    background: linear-gradient(170deg, #0c1330 0%, #141d46 55%, #1d2757 100%);
+    border: 1px solid rgba(130, 165, 255, .28);
+    box-shadow:
+      0 0 0 1px rgba(255,255,255,.04) inset,
+      0 20px 60px rgba(0,0,0,.65),
+      0 0 90px rgba(90,130,255,.25);
+    text-align: center;
+  }
+
+  /* étoiles */
+  .card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image:
+      radial-gradient(1.6px 1.6px at 12% 14%, #fff 50%, transparent 51%),
+      radial-gradient(1.4px 1.4px at 78% 9%,  #cfe0ff 50%, transparent 51%),
+      radial-gradient(1.8px 1.8px at 34% 32%, #fff 50%, transparent 51%),
+      radial-gradient(1.2px 1.2px at 88% 38%, #bcd0ff 50%, transparent 51%),
+      radial-gradient(1.5px 1.5px at 58% 20%, #fff 50%, transparent 51%),
+      radial-gradient(1.3px 1.3px at 22% 56%, #cfe0ff 50%, transparent 51%),
+      radial-gradient(1.6px 1.6px at 68% 62%, #fff 50%, transparent 51%);
+    animation: twinkle 4s ease-in-out infinite alternate;
+    pointer-events: none;
+  }
+  @keyframes twinkle { from { opacity: .45; } to { opacity: 1; } }
+
+  /* skyline */
+  .skyline {
+    position: absolute;
+    left: 0; right: 0; bottom: 0;
+    width: 100%;
+    height: auto;
+    opacity: .38;
+    pointer-events: none;
+  }
+
+  .card > *:not(.skyline):not(.confetti) { position: relative; z-index: 2; }
+
+  /* ---------- TITRES ---------- */
+  .age {
+    display: inline-block;
+    margin-bottom: 10px;
+    padding: 5px 14px;
+    border-radius: 999px;
+    font-size: 12px;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+    color: #9fc0ff;
+    background: rgba(120,160,255,.12);
+    border: 1px solid rgba(120,160,255,.35);
+  }
+
+  h1 {
+    margin: 0 0 6px;
+    font-size: clamp(21px, 6.2vw, 27px);
+    line-height: 1.2;
+    background: linear-gradient(95deg, #ffd166, #ff8fb1 45%, #7ad7ff);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .sub {
+    margin: 0 0 22px;
+    font-size: 14px;
+    color: #9aa8cc;
+  }
+
+  /* ---------- ZONE À GRATTER ---------- */
+  .scratch {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 10;
+    border-radius: 18px;
+    overflow: hidden;
+    background: #0a1029;
+    border: 1px solid rgba(130,165,255,.22);
+    box-shadow: 0 10px 26px rgba(0,0,0,.45) inset;
+    touch-action: none;
+  }
+
+  .reveal {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    padding: 14px;
+    background:
+      radial-gradient(circle at 50% 40%, rgba(120,170,255,.20), transparent 70%),
+      linear-gradient(160deg, #101838, #0a1029);
+  }
+
+  .reveal-label {
+    margin: 0;
+    font-size: 13px;
+    letter-spacing: .06em;
+    color: #9fc0ff;
+    text-transform: uppercase;
+  }
+
+  .btn {
+    padding: 13px 28px;
+    border-radius: 999px;
+    font-size: 15px;
+    font-weight: 700;
+    text-decoration: none;
+    color: #16110a;
+    background: linear-gradient(95deg, #ffd166, #ffb347);
+    box-shadow: 0 8px 22px rgba(255,180,80,.35);
+    transition: transform .15s ease, box-shadow .15s ease;
+  }
+  .btn:hover { transform: translateY(-2px); box-shadow: 0 12px 28px rgba(255,180,80,.5); }
+  .btn:active { transform: translateY(0); }
+
+  #scratchCanvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    cursor: crosshair;
+    touch-action: none;
+    user-select: none;
+    transition: opacity .55s ease, transform .55s ease;
+  }
+
+  /* carte terminée : la couche grattable disparaît */
+  .scratch.done #scratchCanvas {
+    opacity: 0;
+    transform: scale(1.04);
+    pointer-events: none;
+  }
+  .scratch.done .reveal { animation: pop .5s cubic-bezier(.2,1.4,.5,1); }
+  @keyframes pop { from { transform: scale(.94); } to { transform: scale(1); } }
+
+  /* ---------- PIED DE CARTE ---------- */
+  .hint {
+    margin: 16px 0 0;
+    font-size: 12.5px;
+    color: #7d8cb4;
+    min-height: 1.2em;
+  }
+
+  /* ---------- CONFETTIS ---------- */
+  .confetti {
+    position: absolute;
+    top: -14px;
+    width: 8px;
+    height: 13px;
+    border-radius: 2px;
+    z-index: 3;
+    pointer-events: none;
+    animation: fall 2.3s linear forwards;
+  }
+  @keyframes fall {
+    to { transform: translate(var(--x), 520px) rotate(760deg); opacity: 0; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .card::before, .confetti { animation: none; }
+  }
+</style>
+</head>
+<body>
+
+  <div class="card">
+    <!-- Petite skyline nocturne -->
+    <svg class="skyline" viewBox="0 0 420 120" preserveAspectRatio="none" aria-hidden="true">
+      <g fill="#2a3a75">
+        <rect x="0"   y="62" width="34" height="58"/>
+        <rect x="38"  y="80" width="26" height="40"/>
+        <rect x="68"  y="46" width="30" height="74"/>
+        <rect x="102" y="72" width="22" height="48"/>
+        <rect x="128" y="34" width="36" height="86"/>
+        <rect x="168" y="66" width="24" height="54"/>
+        <rect x="196" y="52" width="30" height="68"/>
+        <rect x="230" y="84" width="20" height="36"/>
+        <rect x="254" y="40" width="34" height="80"/>
+        <rect x="292" y="68" width="26" height="52"/>
+        <rect x="322" y="56" width="30" height="64"/>
+        <rect x="356" y="76" width="24" height="44"/>
+        <rect x="384" y="60" width="36" height="60"/>
+      </g>
+      <g fill="#ffd166" opacity=".7">
+        <rect x="74" y="54" width="4" height="4"/><rect x="84" y="66" width="4" height="4"/>
+        <rect x="136" y="44" width="4" height="4"/><rect x="148" y="60" width="4" height="4"/>
+        <rect x="204" y="62" width="4" height="4"/><rect x="262" y="50" width="4" height="4"/>
+        <rect x="274" y="66" width="4" height="4"/><rect x="330" y="66" width="4" height="4"/>
+        <rect x="392" y="70" width="4" height="4"/>
+      </g>
+    </svg>
+
+    <span class="age">Night City · 10 ans</span>
+    <h1>Joyeux anniversaire Noé&nbsp;! 🎂</h1>
+    <p class="sub">Une surprise se cache sous la pastille…</p>
+
+    <div class="scratch" id="scratch">
+      <div class="reveal">
+        <p class="reveal-label">Ta surprise est prête</p>
+        <a class="btn" href="https://happydaynoe.vercel.app/" target="_blank" rel="noopener">
+          Ouvrir 🎉
+        </a>
+      </div>
+      <canvas id="scratchCanvas"></canvas>
+    </div>
+
+    <p class="hint" id="hint">Gratte la pastille avec ton doigt ou ta souris ✨</p>
+  </div>
+
+<script>
+(function () {
+  const zone   = document.getElementById('scratch');
+  const canvas = document.getElementById('scratchCanvas');
+  const ctx    = canvas.getContext('2d', { willReadFrequently: true });
+  const hint   = document.getElementById('hint');
+
+  const RADIUS    = 24;    // taille du "doigt"
+  const THRESHOLD = 0.45;  // % gratté pour révéler automatiquement
+
+  let dpr       = Math.min(window.devicePixelRatio || 1, 2);
+  let drawing   = false;
+  let revealed  = false;
+  let last      = null;
+  let lastCheck = 0;
+
+  /* ---------- Mise en place du canvas ---------- */
+  function sizeCanvas() {
+    const r = zone.getBoundingClientRect();
+    if (!r.width || !r.height) return;
+
+    canvas.width  = Math.round(r.width  * dpr);
+    canvas.height = Math.round(r.height * dpr);
+    canvas.style.width  = r.width  + 'px';
+    canvas.style.height = r.height + 'px';
+
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    paintCover();
+  }
+
+  /* ---------- Peinture "à gratter" ---------- */
+  function paintCover() {
+    const w = zone.clientWidth;
+    const h = zone.clientHeight;
+
+    ctx.globalCompositeOperation = 'source-over';
+    ctx.clearRect(0, 0, w, h);
+
+    const g = ctx.createLinearGradient(0, 0, w, h);
+    g.addColorStop(0,    '#c8d2e6');
+    g.addColorStop(0.32, '#8d9cba');
+    g.addColorStop(0.5,  '#eef3fb');
+    g.addColorStop(0.68, '#93a2c0');
+    g.addColorStop(1,    '#b7c3d8');
+    ctx.fillStyle = g;
+    ctx.fillRect(0, 0, w, h);
+
+    // petits reflets métalliques
+    for (let i = 0; i < 130; i++) {
+      ctx.fillStyle = 'rgba(255,255,255,' + (0.12 + Math.random() * 0.38).toFixed(2) + ')';
+      ctx.fillRect(Math.random() * w, Math.random() * h, 1.6, 1.6);
+    }
+
+    // texte d'invite
+    ctx.textAlign    = 'center';
+    ctx.textBaseline = 'middle';
+
+    ctx.fillStyle = 'rgba(18,26,48,.78)';
+    ctx.font = '700 15px system-ui, -apple-system, "Segoe UI", sans-serif';
+    ctx.fillText('GRATTE ICI ✨', w / 2, h / 2 - 9);
+
+    ctx.fillStyle = 'rgba(18,26,48,.5)';
+    ctx.font = '600 12px system-ui, -apple-system, "Segoe UI", sans-serif';
+    ctx.fillText('avec ton doigt ou ta souris', w / 2, h / 2 + 13);
+  }
+
+  /* ---------- Grattage ---------- */
+  function pointFrom(e) {
+    const r = canvas.getBoundingClientRect();
+    return { x: e.clientX - r.left, y: e.clientY - r.top };
+  }
+
+  function eraseAt(x, y) {
+    ctx.globalCompositeOperation = 'destination-out';
+    ctx.beginPath();
+    ctx.arc(x, y, RADIUS, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  function eraseLine(a, b) {
+    const dist  = Math.hypot(b.x - a.x, b.y - a.y);
+    const steps = Math.max(1, Math.ceil(dist / (RADIUS / 2)));
+    for (let i = 1; i <= steps; i++) {
+      eraseAt(a.x + (b.x - a.x) * i / steps, a.y + (b.y - a.y) * i / steps);
+    }
+  }
+
+  function onDown(e) {
+    if (revealed) return;
+    drawing = true;
+    canvas.setPointerCapture?.(e.pointerId);
+    last = pointFrom(e);
+    eraseAt(last.x, last.y);
+    e.preventDefault();
+  }
+
+  function onMove(e) {
+    if (!drawing || revealed) return;
+    const p = pointFrom(e);
+    if (last) eraseLine(last, p); else eraseAt(p.x, p.y);
+    last = p;
+    checkProgress(false);
+    e.preventDefault();
+  }
+
+  function onUp() {
+    if (!drawing) return;
+    drawing = false;
+    last = null;
+    checkProgress(true);
+  }
+
+  /* ---------- Calcul du pourcentage gratté ---------- */
+  function checkProgress(force) {
+    if (revealed) return;
+    const now = performance.now();
+    if (!force && now - lastCheck < 180) return;
+    lastCheck = now;
+
+    const { width, height } = canvas;
+    if (!width || !height) return;
+
+    const data = ctx.getImageData(0, 0, width, height).data;
+    let cleared = 0, total = 0;
+    const step = 4 * 8; // on échantillonne 1 pixel sur 8
+
+    for (let i = 3; i < data.length; i += step) {
+      total++;
+      if (data[i] < 40) cleared++;
+    }
+
+    if (total && cleared / total >= THRESHOLD) finish();
+  }
+
+  /* ---------- Révélation ---------- */
+  function finish() {
+    if (revealed) return;
+    revealed = true;
+    drawing  = false;
+    zone.classList.add('done');
+    hint.textContent = 'Surprise découverte ! Bon anniversaire Noé 🎈';
+    confetti();
+  }
+
+  function confetti() {
+    const colors = ['#ffd166', '#ff8fb1', '#7ad7ff', '#b892ff', '#7ef29d'];
+    for (let i = 0; i < 44; i++) {
+      const el = document.createElement('i');
+      el.className = 'confetti';
+      el.style.left = (Math.random() * 100) + '%';
+      el.style.background = colors[i % colors.length];
+      el.style.animationDelay = (Math.random() * 0.5).toFixed(2) + 's';
+      el.style.setProperty('--x', ((Math.random() * 2 - 1) * 70).toFixed(0) + 'px');
+      zone.parentElement.appendChild(el);
+      setTimeout(() => el.remove(), 3000);
+    }
+  }
+
+  /* ---------- Écouteurs ---------- */
+  canvas.addEventListener('pointerdown', onDown);
+  canvas.addEventListener('pointermove', onMove);
+  canvas.addEventListener('pointerup', onUp);
+  canvas.addEventListener('pointercancel', onUp);
+  canvas.addEventListener('pointerleave', onUp);
+
+  // accessibilité clavier : Entrée / Espace révèle la carte
+  canvas.setAttribute('tabindex', '0');
+  canvas.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); finish(); }
+  });
+
+  // redimensionnement
+  let rt;
+  window.addEventListener('resize', () => {
+    clearTimeout(rt);
+    rt = setTimeout(() => { if (!revealed) sizeCanvas(); }, 160);
+  });
+
+  // démarrage
+  requestAnimationFrame(sizeCanvas);
+})();
+</script>
+</body>
+</html>
